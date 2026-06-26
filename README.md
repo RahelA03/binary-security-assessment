@@ -1,16 +1,11 @@
 #  Binary Security Assessment using Static Analysis, Reverse Engineering & Fuzzing
-Binary Security Assessment — Static Analysis, Reverse Engineering & Fuzzing
 
 A full security assessment of a vulnerable 64-bit Linux binary, carried out end to end: from first-pass string triage, through source and binary static analysis, reverse engineering, and automated fuzzing, to a documented set of findings with severity ratings and remediation guidance.
 
 Tools: strings · radare2 · Ghidra · AFL++ · GDB · Kali Linux
 Focus: application security · reverse engineering · vulnerability analysis · OWASP / CWE mapping
 
-
 Completed as part of my M.S. in Cyber Operations (CY645 – Software Exploitation and Resiliency). The target was an intentionally vulnerable lab binary provided for analysis; all testing was done in an isolated VM.
-
-
-
 
 Overview
 
@@ -18,13 +13,11 @@ I was given a compiled binary (end_to_end_assessment) with no source documentati
 
 My conclusion: the binary should not be deployed in any environment with sensitive data, network exposure, or untrusted input.
 
-
 Target
 
 PropertyValueFile typeELF 64-bit LSB PIE executableArchitecturex86-64, dynamically linkedSymbolsNot stripped (debug symbols present)CompilerGCC (Debian 12.2.0)ProtectionsNX disabled, no stack canaries
 
 I generated and recorded MD5/SHA-256 hashes up front so every later finding could be tied back to the exact artifact analyzed.
-
 
 Approach
 
@@ -35,8 +28,6 @@ Reverse engineering with radare2 — disassembled the unstripped functions to co
 Decompilation with Ghidra — used the decompiled view to read the logic in near-C form and validate the radare2 findings.
 Fuzzing with AFL++ — drove the binary with mutated input to prove exploitability rather than just assert it.
 Crash analysis with GDB — inspected the crashing state to characterize the overflow.
-
-
 
 Findings
 
@@ -57,17 +48,11 @@ store_password() opens secrets.txt in append mode and writes USER=%s PASS=%s in 
 
 Remediation
 
-
 Command injection — remove the system() call; if directory listing is needed, use opendir() / readdir() instead of shelling out.
 Buffer overflow — replace strcpy() with strncpy() and validate input length against the buffer size before copying.
 Credential storage — stop writing plaintext credentials; use a strong password hash (bcrypt, scrypt, or Argon2) or a dedicated secrets manager, and tighten file permissions.
 Build hardening — recompile with -fstack-protector-strong, -D_FORTIFY_SOURCE=2, and -Wl,-z,relro,-z,now,-z,noexecstack to restore baseline binary protections.
 
-
-
 Key Takeaways
 
-
-Layered analysis matters. Static analysis showed the patterns, reverse engineering confirmed them at the binary level, and fuzzing proved the overflow was actually reachable. No single technique would have given the full picture.
-Symbols and missing protections are force multipliers for an attacker. An unstripped binary with NX off made the overflow path far easier to trace and weaponize — a concrete argument for build-time hardening.
-Tie findings to standards. Mapping each issue to OWASP and CWE turns "this looks bad" into something a team can prioritize and track.
+The finding shows that layered analysis are essential to see the full picture of the assesment. Static analysis showed the patterns, reverse engineering confirmed them at the binary level, and fuzzing proved the overflow was actually reachable. No single technique would have given the full picture. Symbols and missing protections are force multipliers for an attacker. An unstripped binary with NX off made the overflow path far easier to trace and weaponize a concrete argument for build-time hardening. Tie findings to standards. Mapping each issue to OWASP and CWE turns "this looks bad" into something a team can prioritize and track.
