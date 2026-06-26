@@ -56,3 +56,16 @@ Build hardening — recompile with -fstack-protector-strong, -D_FORTIFY_SOURCE=2
 Key Takeaways
 
 The finding shows that layered analysis are essential to see the full picture of the assesment. Static analysis showed the patterns, reverse engineering confirmed them at the binary level, and fuzzing proved the overflow was actually reachable. No single technique would have given the full picture. Symbols and missing protections are force multipliers for an attacker. An unstripped binary with NX off made the overflow path far easier to trace and weaponize a concrete argument for build-time hardening. Tie findings to standards. Mapping each issue to OWASP and CWE turns "this looks bad" into something a team can prioritize and track.
+
+Screenshots
+**Static analysis — command injection via `system()`**
+![Command injection finding](command-injection.png)
+
+**Reverse engineering — function map in radare2**
+![radare2 function list](radare2-functions.png)
+
+**Decompilation — `insecure_exec()` in Ghidra**
+![Ghidra decompilation](ghidra-decompile.png)
+
+**Fuzzing — AFL++ producing 80.1k crashes**
+![AFL++ crash run](afl-crashes.png)
